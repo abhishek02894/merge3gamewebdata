@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Game {
+  id              String   @id @default(cuid())
+  name            String
+  packageName     String   @unique
+  gitlabProjectId Int      @unique
+  gitlabRepoUrl   String
+  playStoreAppId  String?
+  iconUrl         String?
+  description     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  releases      Release[]
+  webhookEvents WebhookEvent[]
+
+  @@map("games")
+}
+
+model Release {
+  id          String        @id @default(cuid())
+  gameId      String
+  game        Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  versionName String
+  versionCode Int?
+  tagName     String
+  previousTag String?
+  status      ReleaseStatus @default(DETECTED)
+  releaseDate DateTime?
+  changelog   String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  commits        Commit[]
+  rolloutEntries RolloutEntry[]
+  buildInfo      BuildInfo?
+
+  @@unique([gameId, tagName])
+  @@index([gameId, createdAt(sort: Desc)])
+  @@map("releases")
+}
+
+enum ReleaseStatus {
+  DETECTED
+  BUILDING
+  REVIEW
+  ROLLING_OUT
+  COMPLETED
+  HALTED
+}
+
+model Commit {
+  id          String   @id @default(cuid())
+  releaseId   String?
+  release     Release? @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  gameId      String
+  hash        String
+  shortHash   String
+  message     String
+  author      String
+  authorEmail String?
+  committedAt DateTime
+  url         String?
+  createdAt   DateTime @default(now())
+
+  @@unique([gameId, hash])
+  @@index([gameId, releaseId])
+  @@map("commits")
+}
+
+model RolloutEntry {
+  id         String   @id @default(cuid())
+  releaseId  String
+  release    Release  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  percentage Float
+  status     String
+  track      String   @default("production")
+  fetchedAt  DateTime @default(now())
+  notes      String?
+
+  @@index([releaseId, fetchedAt(sort: Desc)])
+  @@map("rollout_entries")
+}
+
+model BuildInfo {
+  id               String   @id @default(cuid())
+  releaseId        String   @unique
+  release          Release  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  buildNumber      String?
+  aabSizeBytes     BigInt?
+  apkSizeBytes     BigInt?
+  minSdkVersion    Int?
+  targetSdkVersion Int?
+  sha256           String?
+  fetchedAt        DateTime @default(now())
+
+  @@map("build_infos")
+}
+
+model WebhookEvent {
+  id          String    @id @default(cuid())
+  gameId      String?
+  game        Game?     @relation(fields: [gameId], references: [id], onDelete: SetNull)
+  eventType   String
+  source      String    @default("gitlab")
+  payload     Json
+  processedAt DateTime?
+  error       String?
+  createdAt   DateTime  @default(now())
+
+  @@index([gameId, createdAt(sort: Desc)])
+  @@map("webhook_events")
+}
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+
+  @@map("settings")
+}
