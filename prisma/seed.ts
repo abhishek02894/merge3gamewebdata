@@ -9,7 +9,7 @@ const games = [
   {
     name: "Merge Home Town",
     packageName: "com.studio.mergehometown",
-    gitlabProjectId: 1,
+    gitlabProjectId: 69221270,
     gitlabRepoUrl: "https://gitlab.com/your-studio/merge-home-town",
     description: "A merge 3 puzzle game where you build and decorate your dream town.",
   },
