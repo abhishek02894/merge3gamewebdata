@@ -3,12 +3,14 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 import {
   LayoutDashboard,
   Gamepad2,
   Tag,
   Settings,
   Sparkles,
+  LogOut,
 } from "lucide-react"
 
 const navItems = [
@@ -20,6 +22,13 @@ const navItems = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" })
+    router.push("/login")
+    router.refresh()
+  }
 
   return (
     <div className="flex min-h-screen">
@@ -55,11 +64,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             )
           })}
         </nav>
-        <div className="p-3 border-t border-sidebar-border">
+        <div className="p-3 border-t border-sidebar-border space-y-2">
           <div className="rounded-xl bg-sidebar-accent/50 p-3">
             <p className="text-[10px] font-medium text-sidebar-foreground/40 uppercase tracking-wider">3 Games Tracked</p>
             <p className="text-xs text-sidebar-foreground/60 mt-1">Auto-synced via GitLab + PlayStore</p>
           </div>
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-sidebar-foreground/40 hover:text-sidebar-foreground/70 hover:bg-sidebar-accent/50 transition-colors"
+          >
+            <LogOut className="size-3.5" />
+            Sign Out
+          </button>
         </div>
       </aside>
 
