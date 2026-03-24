@@ -10,10 +10,8 @@ import { Sparkles, Loader2 } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
-  const [isRegister, setIsRegister] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [name, setName] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -23,15 +21,10 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const endpoint = isRegister ? "/api/auth/register" : "/api/auth/login"
-      const body = isRegister
-        ? { email, password, name }
-        : { email, password }
-
-      const res = await fetch(endpoint, {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ email, password }),
       })
 
       const data = await res.json()
@@ -58,30 +51,16 @@ export default function LoginPage() {
           </div>
           <div>
             <CardTitle className="text-xl font-bold">Release Tracker</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              {isRegister ? "Create your admin account" : "Sign in to continue"}
-            </p>
+            <p className="text-sm text-muted-foreground mt-1">Sign in to continue</p>
           </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {isRegister && (
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  placeholder="Abhishek"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-            )}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Username</Label>
               <Input
                 id="email"
-                type="email"
-                placeholder="admin@example.com"
+                placeholder="admin"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -107,18 +86,8 @@ export default function LoginPage() {
 
             <Button type="submit" className="w-full gap-1.5" disabled={loading}>
               {loading && <Loader2 className="size-4 animate-spin" />}
-              {loading ? "Please wait..." : isRegister ? "Create Account" : "Sign In"}
+              {loading ? "Please wait..." : "Sign In"}
             </Button>
-
-            <button
-              type="button"
-              onClick={() => { setIsRegister(!isRegister); setError("") }}
-              className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {isRegister
-                ? "Already have an account? Sign in"
-                : "First time? Create admin account"}
-            </button>
           </form>
         </CardContent>
       </Card>
