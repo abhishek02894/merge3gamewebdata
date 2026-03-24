@@ -8,8 +8,8 @@ const prisma = new PrismaClient({ adapter })
 const games = [
   {
     name: "Merge Home Town",
-    packageName: "com.studio.mergehometown",
-    gitlabProjectId: 69221270,
+    packageName: "com.merge.hometown",
+    gitlabProjectId: 38372846,
     gitlabRepoUrl: "https://gitlab.com/your-studio/merge-home-town",
     description: "A merge 3 puzzle game where you build and decorate your dream town.",
   },
