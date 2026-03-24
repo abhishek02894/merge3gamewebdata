@@ -1,5 +1,7 @@
 import Link from "next/link"
+import { getGamesWithLatestRelease } from "@/lib/data/games"
 import { getAllReleases } from "@/lib/data/releases"
+import { AddReleaseDialog } from "@/components/add-release-dialog"
 import { StatusBadge } from "@/components/status-badge"
 import { formatVersion, formatDate, formatPercentage } from "@/lib/formatters"
 import type { ReleaseStatus } from "@prisma/client"
@@ -25,6 +27,7 @@ export default async function AllReleasesPage({
 }) {
   const sp = await searchParams
   const page = Number(sp.page ?? "1")
+  const allGames = await getGamesWithLatestRelease()
 
   const { releases, total, pages } = await getAllReleases({
     gameId: sp.gameId,
@@ -35,8 +38,11 @@ export default async function AllReleasesPage({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">All Releases</h1>
-        <p className="text-sm text-muted-foreground">{total} total</p>
+        <div>
+          <h1 className="text-2xl font-bold">All Releases</h1>
+          <p className="text-sm text-muted-foreground">{total} total</p>
+        </div>
+        <AddReleaseDialog games={allGames.map((g) => ({ id: g.id, name: g.name }))} />
       </div>
 
       {releases.length === 0 ? (

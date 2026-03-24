@@ -3,6 +3,7 @@ import { getDashboardData } from "@/lib/data/releases"
 import { GameCard } from "@/components/game-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatRelativeDate } from "@/lib/formatters"
+import { AddReleaseDialog } from "@/components/add-release-dialog"
 import { Activity, Tag, TrendingUp, Zap, ArrowUpRight } from "lucide-react"
 
 export const dynamic = "force-dynamic"
@@ -22,9 +23,12 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Overview of all your game releases and rollouts</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground mt-1">Overview of all your game releases and rollouts</p>
+        </div>
+        <AddReleaseDialog games={games.map((g) => ({ id: g.id, name: g.name }))} />
       </div>
 
       {/* Stats */}
